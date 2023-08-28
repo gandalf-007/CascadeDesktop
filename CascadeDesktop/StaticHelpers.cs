@@ -1,5 +1,6 @@
 ﻿using Cascade.Common;
 using IxMilia.Dxf;
+using IxMilia.Dxf.Entities;
 using OpenTK;
 using System;
 using System.Drawing;
@@ -107,6 +108,11 @@ namespace CascadeDesktop
             return new Vector3d(v.X, v.Y, v.Z);
         }
         public static Vector2d ToVector2d(this PointF v)
+        {
+            return new Vector2d(v.X, v.Y);
+        }
+
+        public static Vector2d ToVector2d(this DxfLwPolylineVertex v)
         {
             return new Vector2d(v.X, v.Y);
         }

@@ -1589,11 +1589,11 @@ public:
 	ManagedObjHandle^ Clone(ManagedObjHandle^ m) {
 		BRepBuilderAPI_Copy copy;
 		ObjHandle h = m->ToObjHandle();
-		
+
 		const auto* object1 = impl->getObject(h);
 
 		TopoDS_Shape shape0 = Handle(AIS_Shape)::DownCast(object1)->Shape();
-		copy.Perform(shape0);	
+		copy.Perform(shape0);
 
 		auto shapeCopy = copy.Shape();
 
@@ -2118,6 +2118,7 @@ public:
 			BRepBuilderAPI_MakeWire wire;
 			for (size_t j = 0; j < blueprint->Contours[i]->Items->Count; j++)
 			{
+
 				auto p = blueprint->Contours[i]->Items[j];
 				Line2D^ line = dynamic_cast<Line2D^>	(p);
 				BlueprintPolyline^ polyline = dynamic_cast<BlueprintPolyline^>	(p);
@@ -2147,10 +2148,24 @@ public:
 						auto seg1 = GC_MakeCircle(gp_Ax1(cen, gp_Dir(0, 0, 1)), arc->Radius).Value();
 						auto edge = BRepBuilderAPI_MakeEdge(seg1);
 						TopoDS_Edge e = TopoDS::Edge(edge);
-						if (arc->CCW)
-							e.Reverse();
 
+						//if (arc->CCW)
+//							e.Reverse();
+
+
+						BRepBuilderAPI_MakeWire wire1;
+						wire1.Add(e);
+						BRepBuilderAPI_MakeFace face1(wire1.Wire());
+						GProp_GProps props;
+
+						BRepGProp::SurfaceProperties(face1, props);
+						double area = props.Mass();
+						if (area >= 0) {
+							//e.Reverse();
+
+						}
 						wire.Add(e);
+
 						/*auto wb = BRepBuilderAPI_MakeWire(edge).Wire();
 						wb.Reverse();
 
@@ -2166,12 +2181,47 @@ public:
 
 							auto seg1 = GC_MakeArcOfCircle(pnt1, pnt3, pnt2).Value();
 							auto edge = BRepBuilderAPI_MakeEdge(seg1);
+							TopoDS_Edge e = TopoDS::Edge(edge);
 
-							wire.Add(edge);
+							BRepBuilderAPI_MakeWire wire1;
+							wire1.Add(e);
+							BRepBuilderAPI_MakeFace face1(wire1.Wire());
+							GProp_GProps props;
+
+							BRepGProp::SurfaceProperties(face1, props);
+							double area = props.Mass();
+							if (area >= 0) {
+								//e.Reverse();
+
+							}
+							/*if (arc->CCW)
+								e.Reverse();*/
+
+							wire.Add(e);
 						}
 			}
+			auto wadd = wire.Wire();	
+			BRepBuilderAPI_MakeFace face1(wadd);
+			GProp_GProps props;
 
-			builder.Add(compound, wire.Wire());
+			BRepGProp::SurfaceProperties(face1, props);
+			double area = props.Mass();
+			if (blueprint->Contours[i]->Internal) {
+				//wadd.Orientation(TopAbs_INTERNAL);
+				if (area < 0) {
+
+					wadd.Reverse();
+					
+				}
+			}
+			else {
+				//wadd.Orientation(TopAbs_EXTERNAL);
+				if (area >= 0) {
+					wadd.Reverse();
+				}
+			}
+
+			builder.Add(compound, wadd);
 
 			//ImportElement(builder, compound, blueprint->Items[i]);
 		}

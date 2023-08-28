@@ -743,28 +743,15 @@ namespace CascadeDesktop
                 if (item.Parent == null)
                     continue;
 
-                if (Math.Sign(StaticHelpers.signed_area(item.GetPoints().ToArray())) == sign)
+                /*if (Math.Sign(StaticHelpers.signed_area(item.GetPoints().ToArray())) == sign)
                 {
                     item.Reverse();
-                }
-                blueprint.Contours.Add(item.ToBlueprintContour());
-
-                /*BlueprintPolyline poly = new BlueprintPolyline();
-                BlueprintContour cntr = new BlueprintContour();
-                cntr.Items.Add(poly);
-                foreach (var pp in item.Points)
-                {
-                    poly.Points.Add(new Vertex2D(pp.X, pp.Y));
-                }
-                if (Math.Sign(StaticHelpers.signed_area(item.Points.ToArray())) == sign)
-                {
-                    poly.Points.Reverse();
-                }
-
-                blueprint.Contours.Add(cntr);*/
+                }*/
+                var toAdd = item.ToBlueprintContour();
+                toAdd.Internal = true;
+                blueprint.Contours.Add(toAdd);              
             }
             var handler = proxy.ImportBlueprint(blueprint);
-
         }
 
         public void ImportDraft()

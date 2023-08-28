@@ -5,6 +5,13 @@ namespace CascadeDesktop
 {
     public class GeomHelpers
     {
+        public static Vector2d GetMiddle(Vector2d center, Vector2d p1, Vector2d p2, double rad)
+        {
+            var mp = (p1 + p2) / 2;
+            var dir = mp - center;
+            return dir.Normalized() * rad + center;
+        }
+
         public static Vector3d? GetAdjointFacesShift(PlaneSurfInfo plane1, PlaneSurfInfo plane2, float eps = 1e-8f)
         {
             var cross1 = Vector3d.Cross(plane1.Normal.ToVector3d(), plane2.Normal.ToVector3d());

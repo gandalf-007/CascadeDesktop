@@ -2,6 +2,7 @@
 using OpenTK;
 using System;
 using System.Collections.Generic;
+using System.Windows;
 
 namespace CascadeDesktop
 {
@@ -51,8 +52,21 @@ namespace CascadeDesktop
                         IsCircle = arc.IsCircle,
                         Start = new Vertex2D(arc.Start.X, arc.Start.Y),
                         End = new Vertex2D(arc.End.X, arc.End.Y),
-                        CCW = Parent != null
+                        //CCW = Parent != null
                     };
+                    if (arc.IsCircle)
+                    {
+                     //   a.CCW = Parent != null;
+                    }
+                    if (!arc.IsCircle)
+                    {
+                        var mid = (a.Start.ToVector2d() + a.End.ToVector2d()) / 2;
+                        var dir = mid - a.Center.ToVector2d();
+                        var mp = dir.Normalized() * a.Radius;
+                        a.Middle = new Vertex2D(mp.X + a.Center.X, mp.Y + a.Center.Y);
+                    }
+
+                    //a.UpdateMiddle();
                     cntr.Items.Add(a);
                 }
                 else

@@ -25,7 +25,7 @@ namespace CascadeDesktop
         public double SweepAngle { get; set; }
         public bool CCW { get; set; }
         public bool IsCircle { get; private set; }
-        public double Length => IsCircle ? 2 * Math.PI * Radius : SweepAngle * Radius;
+        public double Length => IsCircle ? 2 * Math.PI * Radius : Math.Abs(SweepAngle * Radius);
 
         public IElement Clone()
         {
@@ -54,7 +54,12 @@ namespace CascadeDesktop
                 yield break;
             }
             yield return Start;
-
+            var mp = GeomHelpers.GetMiddle(Center, Start, End, Radius);
+            var mp1 = GeomHelpers.GetMiddle(Center, Start, mp, Radius);
+            var mp2 = GeomHelpers.GetMiddle(Center, mp, End, Radius);
+            yield return mp1;
+            yield return mp;
+            yield return mp2;
             /*for (double ang = s; i < Radius; i++) { 
 }*/
 
